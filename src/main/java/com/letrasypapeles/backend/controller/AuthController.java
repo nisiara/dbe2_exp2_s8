@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 // import org.springframework.security.authentication.AuthenticationManager;
 // import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 // import org.springframework.security.core.Authentication;
@@ -41,17 +42,17 @@ public class AuthController {
 	private final UserRepository userRepository;
 	// private final RoleRepository roleRepository;
 	private UserService userService;
-	// private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 	// private final JwtGenerator jwtGenerator;
 
 	@Autowired
 	// public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtGenerator jwtGenerator) {
-	public AuthController(UserRepository userRepository, UserService userService) {
+	public AuthController(UserRepository userRepository, UserService userService, PasswordEncoder passwordEncoder) {
 		// this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		// this.roleRepository = roleRepository;
 		this.userService = userService;
-		// this.passwordEncoder = passwordEncoder;
+		this.passwordEncoder = passwordEncoder;
 		// this.jwtGenerator = jwtGenerator;
 	}
 
@@ -78,7 +79,7 @@ public class AuthController {
 		
 		User user = new User();
 		user.setUsername(registerDTO.getUsername());
-		// user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+		user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 		user.setPassword(registerDTO.getPassword());
 		user.setName(registerDTO.getName());
 		user.setEmail(registerDTO.getEmail());
