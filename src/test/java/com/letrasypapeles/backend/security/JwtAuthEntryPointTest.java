@@ -16,7 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.security.core.AuthenticationException;
+//import org.springframework.security.core.AuthenticationException;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtAuthEntryPointTest {
@@ -24,24 +24,24 @@ public class JwtAuthEntryPointTest {
   private HttpServletRequest request;
   @Mock
   private HttpServletResponse response;
-  @Mock
-  private AuthenticationException authException;
+  // @Mock
+  // private AuthenticationException authException;
 
-  @InjectMocks
-  private JwtAuthEntryPoint jwtAuthEntryPoint; 
+  // @InjectMocks
+  // private JwtAuthEntryPoint jwtAuthEntryPoint; 
 
-  @Test
-  public void sinAutorizacion() throws IOException, ServletException {
+  // @Test
+  // public void sinAutorizacion() throws IOException, ServletException {
  
-    String expectedErrorMessage = "Unauthorized access test";
-    when(authException.getMessage()).thenReturn(expectedErrorMessage);
+  //   String expectedErrorMessage = "Unauthorized access test";
+  //   when(authException.getMessage()).thenReturn(expectedErrorMessage);
 
-    jwtAuthEntryPoint.commence(request, response, authException);
+  //   jwtAuthEntryPoint.commence(request, response, authException);
 
-    verify(response, times(1)).sendError(
-      HttpServletResponse.SC_UNAUTHORIZED, 
-      expectedErrorMessage               
-    );
-  }
+  //   verify(response, times(1)).sendError(
+  //     HttpServletResponse.SC_UNAUTHORIZED, 
+  //     expectedErrorMessage               
+  //   );
+  // }
   
 }

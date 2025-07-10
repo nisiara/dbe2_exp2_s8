@@ -1,5 +1,6 @@
 package com.letrasypapeles.backend.service;
 
+import com.letrasypapeles.backend.entity.Branch;
 import com.letrasypapeles.backend.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,14 @@ public class UserService {
   public Optional<User> obtenerPorUsername(String username){
     return userRepository.findByUsername(username);
   }
+
+  public boolean eliminar(Long id) {
+		Optional<User> userToDelete = userRepository.findById(id);
+		if(userToDelete.isPresent()){
+			userRepository.deleteById(id);
+			return true;
+		}
+		return false;
+	}
   
 }

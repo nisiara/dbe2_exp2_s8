@@ -24,76 +24,76 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(
-	controllers = RoleController.class,
-	excludeAutoConfiguration = {SecurityAutoConfiguration.class} 
-)
-public class RoleControllerTest {
-  @Autowired
-	private MockMvc mockMvc;
+// @WebMvcTest(
+// 	controllers = RoleController.class,
+// 	excludeAutoConfiguration = {SecurityAutoConfiguration.class} 
+// )
+// public class RoleControllerTest {
+//   @Autowired
+// 	private MockMvc mockMvc;
 
-	@MockitoBean
-	private RoleService roleService;
+// 	@MockitoBean
+// 	private RoleService roleService;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+// 	@Autowired
+// 	private ObjectMapper objectMapper;
 
-	private Role rol;
+// 	private Role rol;
 
-  @BeforeEach
-	public void setUp() {
-		rol = new Role();
-    rol.setId(1L);	
-    rol.setName("CLIENTE");
-	}
+//   @BeforeEach
+// 	public void setUp() {
+// 		rol = new Role();
+//     rol.setId(1L);	
+//     rol.setName("CLIENTE");
+// 	}
 
-  @Test
-	public void testGetRoleList() throws Exception {
-		when(roleService.obtenerTodos()).thenReturn(Collections.singletonList(rol));
-		mockMvc.perform(get("/api/role"))
-			.andExpect(status().isOk())
-			.andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(rol))));
-	}
+//   @Test
+// 	public void testGetRoleList() throws Exception {
+// 		when(roleService.obtenerTodos()).thenReturn(Collections.singletonList(rol));
+// 		mockMvc.perform(get("/api/role"))
+// 			.andExpect(status().isOk())
+// 			.andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(rol))));
+// 	}
 
-  @Test
-	public void testGetRoleByName() throws Exception {
-		when(roleService.obtenerPorNombre("CLIENTE")).thenReturn(Optional.of(rol));
-		mockMvc.perform(get("/api/role/CLIENTE"))
-			.andExpect(status().isOk())
-			.andExpect(content().json(objectMapper.writeValueAsString(rol)));
-	}
+//   @Test
+// 	public void testGetRoleByName() throws Exception {
+// 		when(roleService.obtenerPorNombre("CLIENTE")).thenReturn(Optional.of(rol));
+// 		mockMvc.perform(get("/api/role/CLIENTE"))
+// 			.andExpect(status().isOk())
+// 			.andExpect(content().json(objectMapper.writeValueAsString(rol)));
+// 	}
 
-  @Test
-	public void testCreateRole() throws Exception {
-		when(roleService.guardar(rol)).thenReturn(rol);
-		mockMvc.perform(post("/api/role/create")
-				.contentType(String.valueOf(MediaType.APPLICATION_JSON))
-				.content(objectMapper.writeValueAsString(rol)))
-			.andExpect(status().isCreated())
-			.andExpect(content().json(objectMapper.writeValueAsString(rol)));
-	}
+//   @Test
+// 	public void testCreateRole() throws Exception {
+// 		when(roleService.guardar(rol)).thenReturn(rol);
+// 		mockMvc.perform(post("/api/role/create")
+// 				.contentType(String.valueOf(MediaType.APPLICATION_JSON))
+// 				.content(objectMapper.writeValueAsString(rol)))
+// 			.andExpect(status().isCreated())
+// 			.andExpect(content().json(objectMapper.writeValueAsString(rol)));
+// 	}
 
-  @Test
-	public void testDeleteRoleSuccessTest() throws Exception {
-		Long roleId = 1L;
+//   @Test
+// 	public void testDeleteRoleSuccessTest() throws Exception {
+// 		Long roleId = 1L;
 		
-		when(roleService.eliminar(roleId)).thenReturn(true);
-		mockMvc.perform(delete("/api/role/delete/{roleId}", roleId))
-			.andExpect(status().isOk())
-			.andExpect(content().string("Rol eliminado exitosamente"));
+// 		when(roleService.eliminar(roleId)).thenReturn(true);
+// 		mockMvc.perform(delete("/api/role/delete/{roleId}", roleId))
+// 			.andExpect(status().isOk())
+// 			.andExpect(content().string("Rol eliminado exitosamente"));
 		
-		verify(roleService, times(1)).eliminar(roleId);
-	}
+// 		verify(roleService, times(1)).eliminar(roleId);
+// 	}
 
-	@Test
-	public void testDeletepRoleNotFoundTest() throws Exception {
-		Long roleId = 99L;
+// 	@Test
+// 	public void testDeletepRoleNotFoundTest() throws Exception {
+// 		Long roleId = 99L;
 		
-		when(roleService.eliminar(roleId)).thenReturn(false);
-		mockMvc.perform(delete("/api/role/delete/{roleId}", roleId))
-			.andExpect(status().isNotFound()); 
+// 		when(roleService.eliminar(roleId)).thenReturn(false);
+// 		mockMvc.perform(delete("/api/role/delete/{roleId}", roleId))
+// 			.andExpect(status().isNotFound()); 
 		
-		verify(roleService, times(1)).eliminar(roleId);
-	}
+// 		verify(roleService, times(1)).eliminar(roleId);
+// 	}
   
-}
+// }

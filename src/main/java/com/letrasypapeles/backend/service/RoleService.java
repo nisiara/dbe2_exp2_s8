@@ -22,9 +22,9 @@ public class RoleService {
 		return roleRepository.findAll();
 	}
 
-	public Optional<Role> obtenerPorNombre(String nombre) {
-		return roleRepository.findByName(nombre);
-	}
+	// public Optional<Role> obtenerPorNombre(String nombre) {
+	// 	return roleRepository.findByName(nombre);
+	// }
 
 	public Role guardar(Role role) {
 		return roleRepository.save(role);

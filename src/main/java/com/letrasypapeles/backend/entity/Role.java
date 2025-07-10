@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,10 +19,8 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String name;
-
-	@ManyToMany(mappedBy = "roles")
-	private Set<User> userList;
+	@Enumerated(EnumType.STRING)
+	private ERole roleName;
 
 }
 

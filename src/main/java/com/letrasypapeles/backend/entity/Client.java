@@ -1,6 +1,5 @@
 package com.letrasypapeles.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,14 +29,21 @@ public class Client {
 
 	private Integer fidelityPoints;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
-		name = "tbl_client_roles",
-		joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "id"),
-		inverseJoinColumns = @JoinColumn(name = "role_name", referencedColumnName = "name")
-	)
+	// @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	// @JoinTable(
+	// 	name = "tbl_client_roles",
+	// 	joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "id"),
+	// 	inverseJoinColumns = @JoinColumn(name = "role_name", referencedColumnName = "rolName")
+	// )
 
-	@JsonIgnore
+	@ManyToMany(fetch = FetchType.EAGER, targetEntity = Role.class, cascade = CascadeType.PERSIST)
+	@JoinTable(
+		name = "tbl_user_roles",
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+		inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+	)
 	private Set<Role> roles;
+
+
 
 }
