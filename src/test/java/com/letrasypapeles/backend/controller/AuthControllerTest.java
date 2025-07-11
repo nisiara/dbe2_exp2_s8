@@ -26,7 +26,7 @@ import org.springframework.http.ResponseEntity;
 // import org.springframework.security.core.context.SecurityContext;
 // import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.letrasypapeles.backend.dto.AuthResponseDTO;
+import com.letrasypapeles.backend.dto.AuthenticationDTO;
 import com.letrasypapeles.backend.dto.LoginDTO;
 import com.letrasypapeles.backend.dto.RegisterDTO;
 import com.letrasypapeles.backend.entity.Role;
@@ -60,7 +60,7 @@ public class AuthControllerTest {
     // private SecurityContext securityContext;
 
     @InjectMocks
-    private AuthController authController;
+    private AuthenticationController authController;
 
     private LoginDTO loginDTO;
     private RegisterDTO registerDTO;

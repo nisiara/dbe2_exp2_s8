@@ -1,61 +1,76 @@
 package com.letrasypapeles.backend.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.letrasypapeles.backend.security.jwt.JwtAuthEntryPoint;
+import com.letrasypapeles.backend.security.jwt.JwtAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
-  @Bean
-  SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
-    
-    httpSecurity
+	private JwtAuthEntryPoint jwtAuthEntryPoint;
+	
+  @Autowired
+	public SecurityConfig(JwtAuthEntryPoint jwtAuthEntryPoint) {
+		this.jwtAuthEntryPoint = jwtAuthEntryPoint;
+	}
+
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
 			.csrf(csrf -> csrf.disable())
-			
+			.exceptionHandling(exceptions ->
+				exceptions.authenticationEntryPoint(jwtAuthEntryPoint)
+			)
 			.sessionManagement(sessions ->
 				sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
 
-			.authorizeHttpRequests(authentication -> authentication
-				.requestMatchers("/api/auth/login").permitAll()
-				.anyRequest().authenticated()
-			)
+			.authorizeHttpRequests(authz -> authz
+				// Permite acceso a las URLs de Swagger/OpenAPI
+				.requestMatchers("/v3/api-docs/**").permitAll()
+				.requestMatchers("/swagger-ui/**").permitAll()
+				.requestMatchers("/swagger-ui.html").permitAll() // Por si acaso
+				.requestMatchers("/webjars/**").permitAll() // Para los recursos estáticos de Swagger UI
+				.requestMatchers("/api/auth/**").permitAll()
+				.requestMatchers("/empleado").hasRole("EMPLEADO")
+				.requestMatchers("/api/role/**").hasRole("GERENTE")
+				.requestMatchers("/cliente").hasRole("CLIENTE")
+				// .anyRequest().authenticated()
+				.anyRequest().permitAll()
+
+			);
       
-      .httpBasic(Customizer.withDefaults());
+		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-    return httpSecurity.build();
-  }
 
-  @Bean
+		return http.build();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
+
+	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-@Bean
-  UserDetailsService userDetailsService(PasswordEncoder passwordEncoder){
-    InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-    manager.createUser(
-      User.withUsername("todopoderoso")
-        .password(passwordEncoder.encode("666")) // Encode the password here!
-        .roles("ADMIN") // Assign a role, e.g., ADMIN, USER
-        .build());
-    return manager;
-  }
-
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-    return authenticationConfiguration.getAuthenticationManager();
-  }
-  
+	@Bean
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+		return new JwtAuthenticationFilter();
+	}
 }
