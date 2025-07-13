@@ -38,7 +38,7 @@ public class BackendApplication {
 						.email("correo@email.com")
 						.roles(Set.of(
 							Role.builder()
-								.roleName(ERole.valueOf(ERole.GERENTE.name()))
+								.roleName(ERole.valueOf(ERole.ADMIN.name()))
 								.build()
 						))
 						.build();
@@ -51,7 +51,7 @@ public class BackendApplication {
 						.email("correo@email.com")
 						.roles(Set.of(
 							Role.builder()
-								.roleName(ERole.valueOf(ERole.EMPLEADO.name()))
+								.roleName(ERole.valueOf(ERole.DEVELOPER.name()))
 								.build()
 						))
 						.build();
@@ -64,7 +64,7 @@ public class BackendApplication {
 						.email("correo@email.com")
 						.roles(Set.of(
 							Role.builder()
-								.roleName(ERole.valueOf(ERole.CLIENTE.name()))
+								.roleName(ERole.valueOf(ERole.COMPRA.name()))
 								.build()
 						))
 						.build();

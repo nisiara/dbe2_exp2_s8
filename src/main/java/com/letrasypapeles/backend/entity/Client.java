@@ -29,14 +29,8 @@ public class Client {
 
 	private Integer fidelityPoints;
 
-	// @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	// @JoinTable(
-	// 	name = "tbl_client_roles",
-	// 	joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "id"),
-	// 	inverseJoinColumns = @JoinColumn(name = "role_name", referencedColumnName = "rolName")
-	// )
 
-	@ManyToMany(fetch = FetchType.EAGER, targetEntity = Role.class, cascade = CascadeType.PERSIST)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinTable(
 		name = "tbl_user_roles",
 		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -44,6 +38,8 @@ public class Client {
 	)
 	private Set<Role> roles;
 
-
-
 }
+
+
+
+
