@@ -27,7 +27,7 @@ public class BackendApplication {
 		@Autowired
 		UserRepository userRepository;
 
-		 @Bean
+		@Bean
     CommandLineRunner init(UserRepository userRepository) {
         return args -> {
 

@@ -1,6 +1,5 @@
 package com.letrasypapeles.backend.service;
 
-import com.letrasypapeles.backend.entity.Branch;
 import com.letrasypapeles.backend.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

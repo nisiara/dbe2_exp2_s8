@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.letrasypapeles.backend.dto.RegisterDTO;
-import com.letrasypapeles.backend.dto.UserDTO;
 import com.letrasypapeles.backend.entity.ERole;
 import com.letrasypapeles.backend.entity.Role;
 import com.letrasypapeles.backend.entity.User;

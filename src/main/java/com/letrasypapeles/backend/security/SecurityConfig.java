@@ -42,7 +42,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authz -> authz
 				.requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
 				.requestMatchers("/api/authentication/login").permitAll() // Solo login público
-				.requestMatchers("/api/authentication/registro").hasRole("GERENTE") // Requiere rol GERENTE
+				.requestMatchers("/api/authentication/registro").hasRole("ADMIN") 
+				.requestMatchers("/api/user").hasRole("DEVELOPER") 
 				.anyRequest().authenticated()
 			);
 
