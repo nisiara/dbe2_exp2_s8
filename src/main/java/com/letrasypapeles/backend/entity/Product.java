@@ -1,7 +1,5 @@
 package com.letrasypapeles.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +21,6 @@ public class Product {
 	private String name;
 	private String details;
 	private double price;
-	private int sku;
+	private String sku;
 
 }

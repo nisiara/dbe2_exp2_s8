@@ -17,8 +17,11 @@ import com.letrasypapeles.backend.dto.CartResponse;
 import com.letrasypapeles.backend.dto.OrderResponse;
 import com.letrasypapeles.backend.service.CartService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/carts")
+@Tag(name = "Cart", description = "Operaciones relacionadas con el carro de compras")
 public class CartController {
   private final CartService cartService;
 

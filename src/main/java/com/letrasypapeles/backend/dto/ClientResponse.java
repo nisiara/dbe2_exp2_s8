@@ -1,7 +1,5 @@
 package com.letrasypapeles.backend.dto;
 
-import org.springframework.hateoas.RepresentationModel;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-
-public class ProductResponse extends RepresentationModel<ProductResponse>{
-  private Long id;
-  private String sku;
+public class ClientResponse {
   private String name;
-  private Double price;
-  private String details;
+  private String email;
+  private Integer fidelityPoints;
 }

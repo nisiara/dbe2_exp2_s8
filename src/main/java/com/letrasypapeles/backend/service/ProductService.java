@@ -2,6 +2,7 @@ package com.letrasypapeles.backend.service;
 
 import com.letrasypapeles.backend.dto.ProductRequest;
 import com.letrasypapeles.backend.dto.ProductResponse;
+import com.letrasypapeles.backend.entity.Client;
 import com.letrasypapeles.backend.entity.Product;
 import com.letrasypapeles.backend.repository.ProductRepository;
 
@@ -27,30 +28,26 @@ public class ProductService {
 		return productRepository.findById(id).map(this::mapToProductResponse);
 	}
 
-
-  public void addProduct(ProductRequest productRequest) {
+  public ProductResponse addProduct(ProductRequest productRequest) {
     Product product = Product.builder()
       .details(productRequest.getDetails())
       .name(productRequest.getName())
       .price(productRequest.getPrice())
+      .sku(productRequest.getSku()) 
       .build();
 
-      productRepository.save(product);       
-  }
-
-  public ProductResponse createProduct(ProductRequest productRequest) {
-    Product product = Product.builder()
-      .name(productRequest.getName())
-      .details(productRequest.getDetails())
-      .price(productRequest.getPrice())
-      .build();
     Product savedProduct = productRepository.save(product);
-      return mapToProductResponse(savedProduct);
-    }
-
-  public void deleteProduct(Long id) {
-    productRepository.deleteById(id);
+    return mapToProductResponse(savedProduct);
   }
+
+  public boolean deleteProduct(Long id) {
+    Optional<Product> productToDelete = productRepository.findById(id);
+    if(productToDelete.isPresent()){
+      productRepository.deleteById(id);
+      return true;
+    }
+    return false;
+	}
 
   public List<ProductResponse> getAllProducts() {
     List<Product> products = productRepository.findAll();

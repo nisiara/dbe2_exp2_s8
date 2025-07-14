@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.letrasypapeles.backend.dto.ClientDTO;
 import com.letrasypapeles.backend.entity.Client;
-import com.letrasypapeles.backend.repository.RoleRepository;
 import com.letrasypapeles.backend.service.ClientService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,20 +32,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/client")
-@Tag(name = "Endpoints Clientes", description = "Operaciones relacionadas con la entidad Cliente")
+@Tag(name = "** Endpoints Cliente **", description = "Operaciones relacionadas con la entidad Cliente")
 public class ClientController {
 
 	private ClientService clientService;
-	private RoleRepository roleRepository;
-	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	public ClientController(ClientService clientService, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+	public ClientController(ClientService clientService) {
 		this.clientService = clientService;
-		this.passwordEncoder = passwordEncoder;
-		this.roleRepository = roleRepository;
 	}
 
 	/* 
@@ -53,7 +52,6 @@ public class ClientController {
 	 * OBTENER TODOS LOS CLIENTES
 	 * 
 	*/
-
 	@Operation(
 		summary = "Obtiene una lista de todos los clientes",
 		description = "Este endpoint devuelve una lista completa de todos los clientes registrados en el sistema",
@@ -78,12 +76,36 @@ public class ClientController {
 	)
 	//@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
-	public ResponseEntity<List<Client>> getClients() {
+	public ResponseEntity<CollectionModel<EntityModel<Client>>> getClients() {
+    
 		List<Client> clients = clientService.getClients();
 		if (clients.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<>(clients, HttpStatus.OK);
+
+		List<EntityModel<Client>> clientModels = clients.stream()
+      .map(client -> {
+        return EntityModel.of(client,
+          linkTo(methodOn(ClientController.class).getById(client.getId())).withSelfRel(),
+          linkTo(methodOn(ClientController.class).delete(client.getId())).withRel("delete-client"),
+          linkTo(methodOn(ClientController.class).create(null)).withRel("create-client"),
+          linkTo(methodOn(ClientController.class).getClients()).withRel("all-clients")
+        );
+      })
+      .collect(Collectors.toList());
+
+			if (clientModels.isEmpty()) {
+        return new ResponseEntity<>(CollectionModel.of(
+            clientModels, // La lista de EntityModel estará vacía
+            linkTo(methodOn(ClientController.class).getClients()).withSelfRel(),
+            linkTo(methodOn(ClientController.class).create(null)).withRel("create-client")
+        ), HttpStatus.OK);
+    }
+
+    return new ResponseEntity<>(CollectionModel.of(clientModels,
+      linkTo(methodOn(ClientController.class).getClients()).withSelfRel(),
+      linkTo(methodOn(ClientController.class).create(null)).withRel("create-client")
+      ), HttpStatus.OK);
 	}
 
 	/* 
@@ -114,7 +136,7 @@ public class ClientController {
 		}
 	)
 	@GetMapping("/{id}")
-	public ResponseEntity<Client> getById(
+	public ResponseEntity<EntityModel<Client>> getById(
 		@Parameter(
 			name = "id",
 			description = "Identificador único del cliente",
@@ -124,11 +146,20 @@ public class ClientController {
 		@PathVariable Long id){
 			Optional<Client> clientOptional = clientService.getById(id);
 			if (clientOptional.isPresent()) {
-        return new ResponseEntity<>(clientOptional.get(), HttpStatus.OK);
-   	 } else {
+        Client client = clientOptional.get();
+        
+        EntityModel<Client> resource = EntityModel.of(client,
+          linkTo(methodOn(ClientController.class).getById(client.getId())).withSelfRel(), 
+          linkTo(methodOn(ClientController.class).getClients()).withRel("all-clients"), 
+          linkTo(methodOn(ClientController.class).delete(client.getId())).withRel("delete-client"),
+          linkTo(methodOn(ClientController.class).create(null)).withRel("create-client") 
+        );
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+   	 	} 
+			else {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-	}
+    	}
+		}
 
 	/* 
 	 *
@@ -182,16 +213,22 @@ public class ClientController {
 
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody ClientDTO clientDTO) {
-		try {
-			Client createdClient = clientService.create(clientDTO);
-			return ResponseEntity.status(HttpStatus.CREATED).body(createdClient);
-		} 
-		catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
+    try {
+      Client createdClient = clientService.create(clientDTO);
+      
+      EntityModel<Client> resource = EntityModel.of(createdClient,
+        linkTo(methodOn(ClientController.class).getById(createdClient.getId())).withSelfRel(),
+        linkTo(methodOn(ClientController.class).getClients()).withRel("all-clients"),
+        linkTo(methodOn(ClientController.class).delete(createdClient.getId())).withRel("delete-client"),
+        linkTo(methodOn(ClientController.class).create(null)).withRel("create-client")
+      );
+      return ResponseEntity.status(HttpStatus.CREATED).body(resource);
+    }
+    catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+  }
 
-	
 	
 	/* 
 	 *
