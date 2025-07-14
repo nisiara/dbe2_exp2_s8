@@ -2,8 +2,6 @@ package com.letrasypapeles.backend.controller;
 
 import com.letrasypapeles.backend.dto.ProductRequest;
 import com.letrasypapeles.backend.dto.ProductResponse;
-import com.letrasypapeles.backend.entity.Branch;
-import com.letrasypapeles.backend.entity.Product;
 import com.letrasypapeles.backend.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,7 +58,7 @@ public class ProductController {
         description = "Lista de productos obtenida exitosamente",
         content = @Content(
           mediaType = "application/json",
-          array = @ArraySchema(schema = @Schema(implementation = Branch.class))
+          array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class))
         )
       ),
       @ApiResponse(
