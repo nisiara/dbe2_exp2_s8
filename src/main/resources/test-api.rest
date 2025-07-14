@@ -1,0 +1,25 @@
+### OBTENER TODOS LOS CLIENTES
+GET http://localhost:8080/api/client
+Content-Type: application/json
+
+
+### CREAR UN NUEVO CLIENTE
+POST http://localhost:8080/api/client
+Content-Type: application/json
+
+{
+  "name": "Juan Pérez",
+  "email": "juan.otro@example.com",
+  "password": "password123",
+  "fidelityPoints": 0
+}
+
+
+### OBTENER UN CLIENTE POR ID
+GET http://localhost:8080/api/client/1
+Content-Type: application/json  
+
+
+### ELIMINAR UN CLIENTE
+DELETE http://localhost:8080/api/client/1
+Content-Type: application/json

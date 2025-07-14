@@ -30,6 +30,10 @@ public class AuthenticationService {
 
   @Transactional
   public User registerUser(RegisterDTO registerDTO) {
+    if (userRepository.existsByUsername(registerDTO.getUsername())) {
+      throw new RuntimeException("El nombre de usuario ya está en uso");
+    }
+
     validateRoles(registerDTO.getRoles());
         
     Set<Role> roles = getValidatedRoles(registerDTO.getRoles());
@@ -58,9 +62,9 @@ public class AuthenticationService {
   private Set<Role> getValidatedRoles(Set<String> roleNames) {
     return roleNames.stream()
       .map(roleName -> {
-          ERole eRole = ERole.valueOf(roleName);
-          return roleRepository.findByRoleName(eRole)
-              .orElseThrow(() -> new RuntimeException("Rol no encontrado en la base de datos: " + eRole));
+        ERole eRole = ERole.valueOf(roleName);
+        return roleRepository.findByRoleName(eRole)
+          .orElseThrow(() -> new RuntimeException("Rol no encontrado en la base de datos: " + eRole));
       })
       .collect(Collectors.toSet());
     }

@@ -14,13 +14,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/product")
@@ -34,6 +40,11 @@ public class ProductController {
 		this.productService = productService;
 	}
 
+	/* 
+	 *
+	 * OBTENER LA LISTA DE PRODUCTOS
+	 * 
+	*/
 	@Operation(
 		summary = "Obtener la lista con los productos",
 		description = "Este endpoint retorna la lista de productos disponibles en el sistema",
@@ -41,10 +52,12 @@ public class ProductController {
 			@ApiResponse(
 				responseCode = "200",
 				description = "Lista de productos obtenida exitosamente",
+				
 				content = @Content(
-					mediaType = "application/json",
-					array = @ArraySchema(schema = @Schema(implementation = Product.class))
-				)
+          mediaType = "application/json",
+					// Swagger s mostrando Product, pero la respuesta real incluirá enlaces
+          array = @ArraySchema(schema = @Schema(implementation = Product.class)) 
+        )
 			),
 			@ApiResponse(
 					responseCode = "204",
@@ -57,16 +70,40 @@ public class ProductController {
 		}
 	)
 	@GetMapping
-	public ResponseEntity<List<Product>> obtenerTodos() {
-		List<Product> products = productService.obtenerTodos();
-		if (products.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<>(products, HttpStatus.OK);
-	}
+  public ResponseEntity<CollectionModel<EntityModel<Product>>> obtenerTodos() {
+    List<Product> products = productService.obtenerTodos();
+
+    if (products.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // Convertir cada Product a EntityModel<Product> y añadir enlaces
+    List<EntityModel<Product>> productModels = products.stream()
+			.map(product -> {
+					// Crear el enlace a sí mismo (self link)
+					Link selfLink = linkTo(methodOn(ProductController.class).obtenerPorId(product.getId())).withSelfRel();
+					// Crear enlaces adicionales para otras operaciones
+					Link allProductsLink = linkTo(methodOn(ProductController.class).obtenerTodos()).withRel("allProducts");
+					Link createProductLink = linkTo(methodOn(ProductController.class).crearProducto(new ProductDTO())).withRel("createProduct");
+					Link updateProductLink = linkTo(methodOn(ProductController.class).actualizarProducto(product.getId(), new ProductDTO())).withRel("updateProduct");
+					Link deleteProductLink = linkTo(methodOn(ProductController.class).delete(product.getId())).withRel("deleteProduct");
+
+					return EntityModel.of(product, selfLink, allProductsLink, createProductLink, updateProductLink, deleteProductLink);
+			})
+			.collect(Collectors.toList());
+
+    // Crear un enlace self para la colección completa
+    Link collectionLink = linkTo(methodOn(ProductController.class).obtenerTodos()).withSelfRel();
+
+    return new ResponseEntity<>(CollectionModel.of(productModels, collectionLink), HttpStatus.OK);
+  }
 
 
-
+	/* 
+	 *
+	 * OBTENER UN PRODUCTO POR ID 
+	 * 
+	*/
 	@Operation(
 		summary = "Obtiene un producto por ID",
 		description = "Recupera los detalles de un producto específico utilizando su identificador único",
@@ -90,19 +127,32 @@ public class ProductController {
 		}
 	)
 	@GetMapping("/{id}")
-	public ResponseEntity<Product> obtenerPorId(
-		@Parameter(
-			name = "id",
-			description = "Identificador único del producto. Debe ser un entero positivo,",
-			example = "123", 
-			required = true
-		)
-		@PathVariable Long id) {
-		return productService.obtenerPorId(id)
-			.map(ResponseEntity::ok)
-			.orElse(ResponseEntity.notFound().build());
+  public ResponseEntity<EntityModel<Product>> obtenerPorId(
+	@Parameter(
+		name = "id",
+		description = "Identificador único del producto. Debe ser un entero positivo,",
+		example = "123",
+		required = true
+	)
+	@PathVariable Long id) {
+	return productService.obtenerPorId(id)
+		.map(product -> {
+			Link selfLink = linkTo(methodOn(ProductController.class).obtenerPorId(product.getId())).withSelfRel();
+			Link allProductsLink = linkTo(methodOn(ProductController.class).obtenerTodos()).withRel("allProducts");
+			Link createProductLink = linkTo(methodOn(ProductController.class).crearProducto(new ProductDTO())).withRel("createProduct");
+			Link updateProductLink = linkTo(methodOn(ProductController.class).actualizarProducto(product.getId(), new ProductDTO())).withRel("updateProduct");
+			Link deleteProductLink = linkTo(methodOn(ProductController.class).delete(product.getId())).withRel("deleteProduct");
+
+			return ResponseEntity.ok(EntityModel.of(product, selfLink, allProductsLink, createProductLink, updateProductLink, deleteProductLink));
+		})
+		.orElse(ResponseEntity.notFound().build());
 	}
 
+	/* 
+	 *
+	 * CREAR UN NUEVO PRODUCTO
+	 * 
+	*/
 	@Operation(
 		summary = "Crear un producto",
     description = "Crea un nuevo producto ingresando los datos requeridos.",
@@ -150,7 +200,7 @@ public class ProductController {
 	)
 	
 	@PostMapping
-	public ResponseEntity<Product> crearProducto(@RequestBody ProductDTO productDTO) {
+	public ResponseEntity<EntityModel<Product>> crearProducto(@RequestBody ProductDTO productDTO) {
 		
 		Product product = new Product();
 		product.setName(productDTO.getName());
@@ -162,17 +212,32 @@ public class ProductController {
 		Product savedProduct = null;
 			
 		try {
-			savedProduct = productService.guardar(product);
-		} 
-		catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+      savedProduct = productService.guardar(product);
+    }
+    catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    if (savedProduct == null) {
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
 			
-		return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+    Link selfLink = linkTo(methodOn(ProductController.class).obtenerPorId(savedProduct.getId())).withSelfRel();
+    Link allProductsLink = linkTo(methodOn(ProductController.class).obtenerTodos()).withRel("allProducts");
+    Link createProductLink = linkTo(methodOn(ProductController.class).crearProducto(new ProductDTO())).withRel("createProduct");
+    Link updateProductLink = linkTo(methodOn(ProductController.class).actualizarProducto(savedProduct.getId(), new ProductDTO())).withRel("updateProduct");
+    Link deleteProductLink = linkTo(methodOn(ProductController.class).delete(savedProduct.getId())).withRel("deleteProduct");
+
+    return new ResponseEntity<>(EntityModel.of(savedProduct, selfLink, allProductsLink, createProductLink, updateProductLink, deleteProductLink), HttpStatus.CREATED);
   }
 
 
-
+	/* 
+	 *
+	 * ACTUALIZAR EL PRODUCTO
+	 * 
+	*/
 	@Operation(
 		summary = "Actualiza un producto existente",
 		description = "Actualiza completamente un producto existente utilizando su ID",
@@ -186,8 +251,8 @@ public class ProductController {
 					name = "Producto actualizado",
 					value = """
 						{
-							"name": "Laptop Gaming Pro",
-							"details": "Laptop gaming actualizada con mejor procesador",
+							"name": "Producto actualizado",
+							"details": "Agregamos los detalles actualizados del producto.",
 							"price": 1350.00,
 							"stock": 30
 						}
@@ -216,7 +281,7 @@ public class ProductController {
 	)
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Product> actualizarProducto(
+	public ResponseEntity<EntityModel<Product>> actualizarProducto(
 		@Parameter(
 			description = "ID del producto a actualizar", 
 			example = "123", 
@@ -234,9 +299,21 @@ public class ProductController {
 		if (updatedProduct == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(updatedProduct);
+		
+    Link selfLink = linkTo(methodOn(ProductController.class).obtenerPorId(updatedProduct.getId())).withSelfRel();
+    Link allProductsLink = linkTo(methodOn(ProductController.class).obtenerTodos()).withRel("allProducts");
+    Link createProductLink = linkTo(methodOn(ProductController.class).crearProducto(new ProductDTO())).withRel("createProduct");
+    Link updateProductLink = linkTo(methodOn(ProductController.class).actualizarProducto(updatedProduct.getId(), new ProductDTO())).withRel("updateProduct");
+    Link deleteProductLink = linkTo(methodOn(ProductController.class).delete(updatedProduct.getId())).withRel("deleteProduct");
+
+    return ResponseEntity.ok(EntityModel.of(updatedProduct, selfLink, allProductsLink, createProductLink, updateProductLink, deleteProductLink));
 	}
 
+	/* 
+	 *
+	 * ELIMAR UN PRODUCTO
+	 * 
+	*/
 	@Operation(
 		summary = "Elimina un producto",
 		description = "Elimina un producto específico del sistema utilizando su ID",
@@ -263,24 +340,24 @@ public class ProductController {
 	)
 	
 	@DeleteMapping("/{id}")
-    ResponseEntity<Map<String, String>> delete(
-			@Parameter(
-				description = "ID del producto a eliminar", 
-				example = "456", 
-				required = true
-			)	
-			@PathVariable Long id) {
+	ResponseEntity<Map<String, String>> delete(
+		@Parameter(
+			description = "ID del producto a eliminar", 
+			example = "456", 
+			required = true
+		)	
+		@PathVariable Long id) {
 		
-		boolean isDeleted = productService.eliminar(id);
-		if(isDeleted){
-			Map<String, String> response = new HashMap<>();
-			response.put("message", "Producto eliminado exitosamente");
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} 
-		else{
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			boolean isDeleted = productService.eliminar(id);
+			if(isDeleted){
+				Map<String, String> response = new HashMap<>();
+				response.put("message", "Producto eliminado exitosamente");
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			} 
+			else{
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
 		}
-	}
 
 
 }

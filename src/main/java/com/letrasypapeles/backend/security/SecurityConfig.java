@@ -44,7 +44,8 @@ public class SecurityConfig {
 				.requestMatchers("/api/authentication/login").permitAll() // Solo login público
 				.requestMatchers("/api/authentication/registro").hasRole("ADMIN") 
 				.requestMatchers("/api/user").hasRole("DEVELOPER") 
-				.anyRequest().authenticated()
+				// .anyRequest().authenticated()
+				.anyRequest().permitAll()
 			);
 
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

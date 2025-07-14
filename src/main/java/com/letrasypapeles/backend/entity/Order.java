@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
+
 
 @Data
 @NoArgsConstructor
@@ -21,18 +21,15 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private LocalDate date;
-	private String status;
+	private String receiptNumber;
+  private LocalDateTime issueDate;
+  private Double totalAmount;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@ManyToMany
-	@JoinTable(
-		name="tbl_order_products",
-		joinColumns = @JoinColumn(name="order_id"),
-		inverseJoinColumns = @JoinColumn(name="product_id")
-	)
-	private List<Product> productList;
+	@OneToOne
+  @JoinColumn(name = "cart_id", unique = true)
+  private Cart cart;
 }

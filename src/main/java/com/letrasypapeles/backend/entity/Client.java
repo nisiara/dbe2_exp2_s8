@@ -6,7 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +18,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="tbl_clients")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Client {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,14 +33,21 @@ public class Client {
 
 	private Integer fidelityPoints;
 
+	// @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	// @JoinTable(
+	// 	name = "tbl_user_roles",
+	// 	joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+	// 	inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+	// )
+	// @Builder.Default
+  // private Set<Role> roles = new HashSet<>();
+    
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	@JoinTable(
-		name = "tbl_user_roles",
-		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-		inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-	)
-	private Set<Role> roles;
+	// public void addRole(Role role) {
+	// 	if (role.getRoleName() == ERole.COMPRA) {
+	// 		this.roles.add(role);
+	// 	}
+	// }
 
 }
 

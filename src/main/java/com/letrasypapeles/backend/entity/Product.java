@@ -20,25 +20,9 @@ public class Product {
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonProperty("name")
 	private String name;
-	@JsonProperty("details")
 	private String details;
-	@JsonProperty("price")
 	private double price;
-	@JsonProperty("stock")
 	private int stock;
 
-
-
 }
-
-	// @ManyToOne
-	// @JoinColumn(name="category_id")
-	// @JsonProperty("category")
-	// private Category category;
-
-	// @ManyToOne
-	// @JoinColumn(name="supplier_id")
-	// @JsonProperty("supplier")
-	// private Supplier supplier;

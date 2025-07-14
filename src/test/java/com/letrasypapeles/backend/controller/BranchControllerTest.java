@@ -49,7 +49,7 @@ public class BranchControllerTest {
 		branch.setRegion("Región Metropolitana");
 	}
 
-//@Test@WithMockUser(username = "nico", roles = {"ADMIN"})
+	//@Test@WithMockUser(username = "nicolas", roles = {"ADMIN"})
 	@Test
 	public void testGetBranchList() throws Exception {
 		when(branchService.obtenerTodas()).thenReturn(Collections.singletonList(branch));
