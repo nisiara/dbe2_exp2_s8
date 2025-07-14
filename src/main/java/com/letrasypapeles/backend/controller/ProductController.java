@@ -82,7 +82,7 @@ public class ProductController {
           List<Link> links = new ArrayList<>();
           links.add(linkTo(methodOn(ProductController.class).getProductById(productResponse.getId())).withSelfRel());
           links.add(linkTo(methodOn(ProductController.class).updateProduct(productResponse.getId(), null)).withRel("update-product"));
-          links.add(linkTo(methodOn(ProductController.class).deleteProduct(productResponse.getId())).withRel("delete-product"));
+          links.add(linkTo(methodOn(ProductController.class).delete(productResponse.getId())).withRel("delete-product"));
           links.add(linkTo(methodOn(ProductController.class).createProduct(null)).withRel("create-product"));
           links.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("all-products"));
 
@@ -141,7 +141,7 @@ public class ProductController {
         List<Link> links = new ArrayList<>();
         links.add(linkTo(methodOn(ProductController.class).getProductById(productResponse.getId())).withSelfRel());
         links.add(linkTo(methodOn(ProductController.class).updateProduct(productResponse.getId(), null)).withRel("update-product"));
-        links.add(linkTo(methodOn(ProductController.class).deleteProduct(productResponse.getId())).withRel("delete-product"));
+        links.add(linkTo(methodOn(ProductController.class).delete(productResponse.getId())).withRel("delete-product"));
         links.add(linkTo(methodOn(ProductController.class).createProduct(null)).withRel("create-product"));
         links.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("all-products"));
 
@@ -209,7 +209,7 @@ public class ProductController {
     List<Link> links = new ArrayList<>();
     links.add(linkTo(methodOn(ProductController.class).getProductById(createdProductResponse.getId())).withSelfRel());
     links.add(linkTo(methodOn(ProductController.class).updateProduct(createdProductResponse.getId(), null)).withRel("update-product"));
-    links.add(linkTo(methodOn(ProductController.class).deleteProduct(createdProductResponse.getId())).withRel("delete-product"));
+    links.add(linkTo(methodOn(ProductController.class).delete(createdProductResponse.getId())).withRel("delete-product"));
     links.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("all-products"));
     links.add(linkTo(methodOn(ProductController.class).createProduct(null)).withRel("create-product"));
 
@@ -270,7 +270,7 @@ public class ProductController {
 
     List<Link> links = new ArrayList<>();
     links.add(linkTo(methodOn(ProductController.class).getProductById(updatedProductResponse.getId())).withSelfRel());
-    links.add(linkTo(methodOn(ProductController.class).deleteProduct(updatedProductResponse.getId())).withRel("delete-product"));
+    links.add(linkTo(methodOn(ProductController.class).delete(updatedProductResponse.getId())).withRel("delete-product"));
     links.add(linkTo(methodOn(ProductController.class).createProduct(null)).withRel("create-product"));
     links.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("all-products"));
 

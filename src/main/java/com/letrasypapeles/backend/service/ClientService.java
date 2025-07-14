@@ -1,10 +1,8 @@
 package com.letrasypapeles.backend.service;
 
-import java.util.HashSet;
+
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,21 +10,17 @@ import org.springframework.stereotype.Service;
 
 import com.letrasypapeles.backend.dto.ClientDTO;
 import com.letrasypapeles.backend.entity.Client;
-import com.letrasypapeles.backend.entity.ERole;
-import com.letrasypapeles.backend.entity.Role;
 import com.letrasypapeles.backend.repository.ClientRepository;
-import com.letrasypapeles.backend.repository.RoleRepository;
+
 
 @Service
 public class ClientService {
   private ClientRepository clientRepository;
-  private RoleRepository roleRepository;
   private PasswordEncoder passwordEncoder;
 
   @Autowired
-  public ClientService(ClientRepository clientRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+  public ClientService(ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
     this.clientRepository = clientRepository;
-    this.roleRepository = roleRepository;
     this.passwordEncoder = passwordEncoder;
   }
 

@@ -203,7 +203,7 @@ public class OrderController {
       .collect(Collectors.toList());
 
     CollectionModel<EntityModel<Order>> collectionModel = CollectionModel.of(orderModels,
-      linkTo(methodOn(OrderController.class).obtenerPorUserId(userId)).withSelfRel(),
+      linkTo(methodOn(OrderController.class).obtenerPorUserId(clientId)).withSelfRel(),
       linkTo(methodOn(OrderController.class).obtenerTodos()).withRel("all-orders"),
       linkTo(methodOn(OrderController.class).crearPedido(null)).withRel("create-order")
     );
