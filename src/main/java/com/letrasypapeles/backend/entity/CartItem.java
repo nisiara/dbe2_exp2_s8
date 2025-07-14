@@ -1,5 +1,7 @@
 package com.letrasypapeles.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,5 +36,6 @@ public class CartItem {
 
   @ManyToOne
   @JoinColumn(name = "cart_id")
+  @JsonIgnore
   private Cart cart;
 }

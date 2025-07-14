@@ -6,10 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Data
 @NoArgsConstructor
@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="tbl_clients")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Client {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,21 +32,9 @@ public class Client {
 
 	private Integer fidelityPoints;
 
-	// @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	// @JoinTable(
-	// 	name = "tbl_user_roles",
-	// 	joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-	// 	inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-	// )
-	// @Builder.Default
-  // private Set<Role> roles = new HashSet<>();
-    
-
-	// public void addRole(Role role) {
-	// 	if (role.getRoleName() == ERole.COMPRA) {
-	// 		this.roles.add(role);
-	// 	}
-	// }
+	@OneToMany(mappedBy = "client")
+	@JsonIgnore
+  private List<Order> orderList;
 
 }
 

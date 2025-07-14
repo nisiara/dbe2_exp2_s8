@@ -50,7 +50,7 @@ public class BookingServiceTest {
 			.name("Nombre del producto para testear")
 			.details("Un libro muy bonito para testear")
 			.price(100.00)
-			.stock(5)
+			
 			.build();
 
 		reserva = Booking.builder()

@@ -37,19 +37,19 @@ public class OrderController {
 			.orElse(ResponseEntity.notFound().build());
 	}
 
-	@GetMapping("/byUser/{userId}")
+	@GetMapping("/byClient/{userId}")
 	public ResponseEntity<List<Order>> obtenerPorUserId(@PathVariable Long userId) {
 		List<Order> ordersByUser = orderService.obtenerPorUserId(userId);
 		return ResponseEntity.ok(ordersByUser);
 	}
 
-	@PostMapping("/create")
+	@PostMapping
 	public ResponseEntity<Order> crearPedido(@RequestBody Order order) {
 		Order newOrder = orderService.guardar(order);
 		return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
 	}
 
-	@PutMapping("/update/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Order> actualizarOrden(@PathVariable Long id, @RequestBody Order orden) {
 		return ResponseEntity.ok(orderService.actualizarOrden(id, orden));
 	}

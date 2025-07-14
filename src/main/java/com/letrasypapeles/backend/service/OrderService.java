@@ -30,13 +30,10 @@ public class OrderService {
 		return orderRepository.save(pedido);
 	}
 
-	public List<Order> obtenerPorUserId(Long userId) {
-		return orderRepository.findByUserId(userId);
+	public List<Order> obtenerPorUserId(Long clientId) {
+		return orderRepository.findByClientId(clientId);
 	}
 
-	public List<Order> obtenerPorEstado(String estado) {
-		return orderRepository.findByStatus(estado);
-	}
 
 	public Order actualizarOrden(Long id, Order orden) {
 		if(orderRepository.existsById(id)){

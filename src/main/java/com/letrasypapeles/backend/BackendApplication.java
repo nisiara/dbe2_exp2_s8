@@ -19,7 +19,8 @@ import com.letrasypapeles.backend.repository.RoleRepository;
 public class BackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BackendApplication.class, args);}
+		SpringApplication.run(BackendApplication.class, args);
+	}
 
 		// @Autowired
 		// RoleRepository roleRepository;

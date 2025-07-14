@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,15 +20,16 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String receiptNumber;
+	private String orderNumber;
   private LocalDateTime issueDate;
   private Double totalAmount;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "client_id")
+	private Client client;
 
 	@OneToOne
   @JoinColumn(name = "cart_id", unique = true)
   private Cart cart;
+
 }
