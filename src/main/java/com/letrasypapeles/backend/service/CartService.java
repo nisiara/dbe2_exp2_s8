@@ -19,7 +19,6 @@ import com.letrasypapeles.backend.entity.CartItem;
 import com.letrasypapeles.backend.entity.Client;
 import com.letrasypapeles.backend.entity.Order;
 import com.letrasypapeles.backend.entity.Product;
-import com.letrasypapeles.backend.repository.CartItemRepository;
 import com.letrasypapeles.backend.repository.CartRepository;
 import com.letrasypapeles.backend.repository.ClientRepository;
 import com.letrasypapeles.backend.repository.OrderRepository;

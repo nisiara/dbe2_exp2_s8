@@ -530,7 +530,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Branch"
+                    "$ref": "#/components/schemas/ProductResponse"
                   }
                 }
               }
